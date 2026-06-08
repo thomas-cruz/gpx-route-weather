@@ -1,8 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GPX Weather Planner
+
+A React/Next.js application that helps outdoor enthusiasts plan activities by analyzing weather conditions along their planned routes.
+
+## Overview
+
+This project takes GPX route files and overlays weather forecasts to help cyclists, runners, and hikers understand what conditions they'll face throughout their journey. It calculates real-time wind conditions (headwinds, tailwinds, crosswinds) and displays hourly weather predictions at each checkpoint along your route.
+
+## How It Works
+
+### Core Functionality
+
+1. **Route Upload**: Upload a `.gpx` file containing your planned route
+2. **Activity Selection**: Choose between cycling, running, or hiking modes (each configures different sampling intervals and speeds)
+3. **Start Time**: Set when you plan to start your activity
+4. **Weather Analysis**: The app:
+   - Parses your GPX route coordinates
+   - Samples the route at regular intervals based on activity type
+   - Fetches hourly weather data from Open-Meteo API for each location
+   - Calculates your estimated arrival time at each checkpoint
+   - Analyzes wind direction relative to your route bearing to classify wind conditions
+
+### Wind Classification
+
+The app identifies three wind types:
+- **Headwind** 🔺 (red): Wind blowing against you — harder effort required
+- **Tailwind** 🔻 (green): Wind pushing you — easier conditions
+- **Crosswind** ➡️ (yellow): Wind hitting from the side
+
+### What You See
+
+- Interactive Leaflet map showing your route with weather forecast markers
+- Color-coded weather cards showing:
+  - Temperature ⚠️
+  - Precipitation chances 🌧️
+  - UV Index ☀️
+  - Wind speed 💨
+  - Wind direction
+  - Wind type classification
+- Detailed weather list panel on the right side
+- Arrivals are displayed in chronological order based on travel time
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
+
+```bash
+npm install
+# or
+pnpm install
+# or
+yarn install
+# or
+bun install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -16,9 +68,55 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- ✅ Upload any GPX route file
+- ✅ Real-time weather integration via Open-Meteo API
+- ✅ Wind direction analysis relative to route bearing
+- ✅ Activity-specific configurations (cycling, running, hiking)
+- ✅ Visual wind barb indicators
+- ✅ Color-coded weather events
+- ✅ Smooth reactive UI with Next.js
+
+## Tech Stack
+
+- **Framework**: Next.js 14+
+- **UI Library**: React
+- **Maps**: Leaflet.js with react-leaflet
+- **GPX Parsing**: @mapbox/togeojson
+- **Backend API**: Open-Meteo Weather API
+
+## Project Structure
+
+```
+gpx-weather-planner/
+├── app/                 # Next.js app router pages
+├── components/          # Reusable React components
+│   ├── mapClientWrapper.tsx     # Main upload interface
+│   ├── map.tsx                  # Reactive map component
+│   ├── windArrow.tsx            # Wind visualization
+│   └── routeWeatherSidebar.tsx  # Weather data listing
+├── lib/                 # Utility functions
+│   ├── parseGpx.ts               # GPX file parsing
+│   ├── weather.ts                # Weather API calls
+│   ├── wind.ts                   # Wind classification
+│   ├── routeAnalysis.ts          # Distance/bearing math
+│   ├── sampleRoute.ts            # Time-based sampling
+│   └── activityConfig.ts         # Activity settings
+└── types/               # TypeScript type definitions
+```
+
+## Customization
+
+You can modify various aspects:
+
+- **Weather Grid Size**: Adjust how broadly weather stations cover areas in `map.tsx`
+- **Sample Interval**: Configure distance between weather checkpoints
+- **Activity Configurations**: Modify speeds and intervals in `activityConfig.ts`
+
+## License
+
+Unlicense
 
 ## Learn More
 
