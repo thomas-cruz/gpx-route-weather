@@ -1,4 +1,4 @@
-import * as toGeoJSON from "@tmcw/togeojson";
+import * as toGeoJSON from "@mapbox/togeojson";
 import type { LineString } from "geojson";
 import { DOMParser } from "xmldom";
 
