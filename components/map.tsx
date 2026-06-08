@@ -306,15 +306,12 @@ export default function RouteMap({ gpxData, startTime, activity }: Props) {
   };
 
   return (
-    <div className="flex gap-4">
-      <div className="flex-1">
+    <div className="flex flex-col lg:flex-row gap-4">
+      <div className="h-[50vh] md:h-[600px] lg:h-[700px]">
         <MapContainer
           center={center}
           zoom={11}
-          style={{
-            height: "700px",
-            width: "100%",
-          }}
+          className="h-full w-full rounded-lg"
         >
           <TileLayer
             attribution="© OpenStreetMap contributors"
@@ -360,7 +357,18 @@ export default function RouteMap({ gpxData, startTime, activity }: Props) {
         </MapContainer>
       </div>
 
-      <div className="w-80 overflow-y-auto border rounded p-4 h-[700px]">
+      <div
+        className="
+            w-full
+            lg:w-80
+            border
+            rounded
+            p-4
+            max-h-[400px]
+            lg:max-h-[700px]
+            overflow-y-auto
+          "
+      >
         <h2 className="font-bold text-lg mb-4">Route Weather</h2>
 
         {samples.map((sample, index) => (

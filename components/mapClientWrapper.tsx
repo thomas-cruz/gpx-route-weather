@@ -24,7 +24,15 @@ export default function MapClientWrapper() {
   }
 
   return (
-    <div className="space-y-6">
+    <div
+          className="
+        mx-auto
+        max-w-7xl
+        space-y-6
+        p-4
+        md:p-6
+      "
+    >
       <div
         className="
           rounded-xl
@@ -43,8 +51,8 @@ export default function MapClientWrapper() {
         >
           Plan Your Activity
         </h2>
-      <label
-        className="
+        <label
+          className="
           flex
           cursor-pointer
           flex-col
@@ -57,35 +65,35 @@ export default function MapClientWrapper() {
           p-8
           hover:border-blue-400
         "
-      >
-        <div className="text-4xl">📍</div>
+        >
+          <div className="text-4xl">📍</div>
 
-        <div className="mt-2 font-medium">Upload GPX Route</div>
+          <div className="mt-2 font-medium">Upload GPX Route</div>
 
-        <div className="text-sm">Select a .gpx file</div>
+          <div className="text-sm">Select a .gpx file</div>
 
-        <input
-          type="file"
-          accept=".gpx"
-          className="hidden"
-          onChange={async (e) => {
-            const file = e.target.files?.[0];
+          <input
+            type="file"
+            accept=".gpx"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
 
-            if (!file) return;
+              if (!file) return;
 
-            setGpxData(await file.text());
-          }}
-        />
-      </label>
+              setGpxData(await file.text());
+            }}
+          />
+        </label>
 
-      <div>
-        <label className="mb-2 block font-medium">Start Time</label>
+        <div>
+          <label className="mb-2 block font-medium">Start Time</label>
 
-        <input
-          type="datetime-local"
-          value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
-          className="
+          <input
+            type="datetime-local"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            className="
               w-full
               rounded-lg
               border
@@ -93,32 +101,32 @@ export default function MapClientWrapper() {
               px-4
               py-3
             "
-        />
-      </div>
+          />
+        </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          {
-            value: "cycling",
-            label: "Cycling",
-            emoji: "🚴",
-          },
-          {
-            value: "running",
-            label: "Running",
-            emoji: "🏃",
-          },
-          {
-            value: "hiking",
-            label: "Hiking",
-            emoji: "🥾",
-          },
-        ].map((item) => (
-          <button
-            key={item.value}
-            type="button"
-            onClick={() => setActivity(item.value as ActivityType)}
-            className={`
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            {
+              value: "cycling",
+              label: "Cycling",
+              emoji: "🚴",
+            },
+            {
+              value: "running",
+              label: "Running",
+              emoji: "🏃",
+            },
+            {
+              value: "hiking",
+              label: "Hiking",
+              emoji: "🥾",
+            },
+          ].map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => setActivity(item.value as ActivityType)}
+              className={`
         rounded-lg
         border
         p-4
@@ -130,17 +138,17 @@ export default function MapClientWrapper() {
             : "border-gray-200 hover:border-gray-300"
         }
       `}
-          >
-            <div className="text-2xl">{item.emoji}</div>
+            >
+              <div className="text-2xl">{item.emoji}</div>
 
-            <div className="mt-2 font-medium">{item.label}</div>
-          </button>
-        ))}
-      </div>
+              <div className="mt-2 font-medium">{item.label}</div>
+            </button>
+          ))}
+        </div>
 
-      {gpxData && (
-        <div
-          className="
+        {gpxData && (
+          <div
+            className="
             rounded-lg
             border
             border-green-200
@@ -148,10 +156,10 @@ export default function MapClientWrapper() {
             p-3
             text-green-700
           "
-        >
-          ✓ GPX route loaded
-        </div>
-      )}
+          >
+            ✓ GPX route loaded
+          </div>
+        )}
       </div>
 
       {gpxData && startTime && (
