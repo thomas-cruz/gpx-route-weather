@@ -307,7 +307,7 @@ export default function RouteMap({ gpxData, startTime, activity }: Props) {
 
   return (
     <div className="flex flex-col lg:flex-row gap-4">
-      <div className="h-[50vh] md:h-[600px] lg:h-[700px]">
+      <div className="h-[50vh] md:h-[600px] lg:h-[700px] w-full">
         <MapContainer
           center={center}
           zoom={11}
