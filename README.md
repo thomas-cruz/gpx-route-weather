@@ -94,7 +94,6 @@ gpx-weather-planner/
 ├── components/          # Reusable React components
 │   ├── mapClientWrapper.tsx     # Main upload interface
 │   ├── map.tsx                  # Reactive map component
-│   ├── windArrow.tsx            # Wind visualization
 │   └── routeWeatherSidebar.tsx  # Weather data listing
 ├── lib/                 # Utility functions
 │   ├── parseGpx.ts               # GPX file parsing
