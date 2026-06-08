@@ -247,7 +247,7 @@ export default function RouteMap({ gpxData, startTime, activity }: Props) {
       html: `
         <div
           style="
-            background:white;
+            background:gray;
             border:3px solid ${borderColor};
             border-radius:10px;
             padding:6px;

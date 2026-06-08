@@ -126,7 +126,7 @@ export default function MapClientWrapper() {
         transition
         ${
           activity === item.value
-            ? "border-blue-500 bg-blue-50"
+            ? "border-blue-500 bg-gray-700"
             : "border-gray-200 hover:border-gray-300"
         }
       `}
