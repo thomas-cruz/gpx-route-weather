@@ -1,9 +1,27 @@
 import * as toGeoJSON from "@mapbox/togeojson";
-import type { LineString } from "geojson";
-import { DOMParser } from "xmldom";
 
 export function parseGpx(gpx: string) {
-  const dom = new DOMParser().parseFromString(gpx, "text/xml");
+  if (!gpx || typeof gpx !== "string") {
+    console.warn("parseGpx: invalid input");
+    return [];
+  }
+
+  const trimmed = gpx.trim();
+
+  if (!trimmed.startsWith("<")) {
+    console.warn("parseGpx: input is not XML");
+    return [];
+  }
+
+  const dom = new DOMParser().parseFromString(trimmed, "text/xml");
+
+  // 🔥 detect XML parser errors
+  const parserError = dom.getElementsByTagName("parsererror");
+
+  if (parserError.length > 0) {
+    console.error("Invalid GPX XML", parserError);
+    return [];
+  }
 
   const geojson = toGeoJSON.gpx(dom);
 
@@ -13,9 +31,7 @@ export function parseGpx(gpx: string) {
 
   if (!line) return [];
 
-  const coordinates = (line.geometry as LineString).coordinates;
-
-  return coordinates.map(([lon, lat]) => ({
+  return line.geometry.coordinates.map(([lon, lat]: number[]) => ({
     lat,
     lon,
   }));

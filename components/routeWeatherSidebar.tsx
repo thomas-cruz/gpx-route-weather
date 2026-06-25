@@ -1,9 +1,15 @@
 export default function Sidebar({ samples }: any) {
   return (
-    <div className="w-80 overflow-auto">
-      {samples.map((sample: any) => (
-        <div key={sample.distanceKm} className="border-b p-2">
-          <div>km {sample.distanceKm.toFixed(1)}</div>
+    <div className=" w-full
+            lg:w-80
+            border
+            rounded
+            p-4
+            max-h-[400px]
+            lg:max-h-[700px]
+            overflow-y-auto">
+      {samples.map((sample: any, index) => (
+        <div key={index} className="border-b p-2">
 
           <div>
             🌡️ {sample.temperature}

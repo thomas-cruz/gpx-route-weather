@@ -22,6 +22,9 @@ import { classifyWind } from "@/lib/wind";
 import type { RoutePoint, WeatherSample } from "@/types/route";
 import { ActivityType } from "@/types/activity";
 import { ACTIVITY_CONFIG } from "@/lib/activityConfig";
+import RouteWeatherSidebar from "./routeWeatherSidebar";
+import DigitalTwinScene from "./digitalTwin/digitalTwinScene";
+import DigitalTwinPopupContent from "./digitalTwin/digitalTwinPopupContent";
 
 type Props = {
   gpxData: string;
@@ -33,7 +36,8 @@ const ASSUMED_SPEED_KMH = 20;
 
 export default function RouteMap({ gpxData, startTime, activity }: Props) {
   const [samples, setSamples] = useState<WeatherSample[]>([]);
-  const config = ACTIVITY_CONFIG[activity];
+  const [selectedSample, setSelectedSample] = useState<WeatherSample | null>(null);
+  const config = useMemo(() => ACTIVITY_CONFIG[activity], [activity]);
 
   const parsedRoute = useMemo(() => {
     const coords = parseGpx(gpxData);
@@ -48,8 +52,11 @@ export default function RouteMap({ gpxData, startTime, activity }: Props) {
 
   const sampledRoute = useMemo(
     () => sampleRoute(parsedRoute, config.sampleIntervalKm),
-    [parsedRoute, config]
+    [parsedRoute, config.sampleIntervalKm]
   );
+
+  const gridSize = config.weatherGridSize;
+  const speedKmh = config.speedKmh;
 
   useEffect(() => {
     async function loadWeather() {
@@ -67,8 +74,8 @@ export default function RouteMap({ gpxData, startTime, activity }: Props) {
 
       for (const point of sampledRoute) {
         const key = `${point.lat.toFixed(
-          config.weatherGridSize
-        )}-${point.lon.toFixed(config.weatherGridSize)}`;
+          gridSize
+        )}-${point.lon.toFixed(gridSize)}`;
 
         if (!uniqueLocations.has(key)) {
           uniqueLocations.set(key, point);
@@ -109,8 +116,8 @@ export default function RouteMap({ gpxData, startTime, activity }: Props) {
         const point = sampledRoute[i];
 
         const cacheKey = `${point.lat.toFixed(
-          config.weatherGridSize
-        )}-${point.lon.toFixed(config.weatherGridSize)}`;
+          gridSize
+        )}-${point.lon.toFixed(gridSize)}`;
 
         const weather = weatherCache.get(cacheKey);
 
@@ -118,7 +125,7 @@ export default function RouteMap({ gpxData, startTime, activity }: Props) {
           continue;
         }
 
-        const arrivalHours = point.distanceKm / config.speedKmh;
+        const arrivalHours = point.distanceKm / speedKmh;
 
         const arrivalTime = new Date(
           startDate.getTime() + arrivalHours * 60 * 60 * 1000
@@ -174,11 +181,13 @@ export default function RouteMap({ gpxData, startTime, activity }: Props) {
     loadWeather();
   }, [sampledRoute, startTime]);
 
-  if (parsedRoute.length === 0) {
-    return <div className="text-red-500">No route found.</div>;
-  }
+  const hasRoute = parsedRoute.length > 0;
 
-  const center = [parsedRoute[0].lat, parsedRoute[0].lon] as [number, number];
+  const center = useMemo(() => {
+    if (!parsedRoute.length) return [0, 0];
+    return [parsedRoute[0].lat, parsedRoute[0].lon] as [number, number];
+  }, [parsedRoute]);
+
 
   function getWeatherEmoji(precipitation: number, uvIndex: number) {
     if (precipitation >= 1) {
@@ -305,93 +314,106 @@ export default function RouteMap({ gpxData, startTime, activity }: Props) {
     });
   };
 
+  const markers = useMemo(
+    () =>
+      samples.map((sample, index) => ({
+        key: `${sample.lat}-${sample.lon}-${sample.arrivalTime.getTime()}-${index}`,
+        sample,
+        icon: createForecastCard(sample),
+      })),
+    [samples]
+  );
+
   return (
     <div className="flex flex-col lg:flex-row gap-4">
-      <div className="h-[50vh] md:h-[600px] lg:h-[700px] w-full">
-        <MapContainer
-          center={center}
-          zoom={11}
-          className="h-full w-full rounded-lg"
-        >
-          <TileLayer
-            attribution="© OpenStreetMap contributors"
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-
-          <Polyline positions={routeCoords} color="#2563eb" weight={4} />
-
-          {samples.map((sample, index) => (
-            <Marker
-              key={index}
-              position={[sample.lat, sample.lon]}
-              icon={createForecastCard(sample)}
+      {!hasRoute ? (
+        <div className="text-red-500">No route found.</div>
+      ) : (
+        <>
+          <div className=" h-[50vh]
+            md:h-[600px]
+            lg:h-[700px]
+            w-full"
+          >
+            <MapContainer
+              center={center as any}
+              zoom={11}
+              className="h-full w-full rounded-lg"
+              key="leaflet-map"
             >
-              <Popup>
-                <div className="space-y-1">
-                  <div>
-                    <strong>{sample.arrivalTime.toLocaleString()}</strong>
-                  </div>
+              <TileLayer
+                attribution="© OpenStreetMap contributors"
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
 
-                  <div>
-                    🌡️ {sample.temperature}
-                    °C
-                  </div>
+              <Polyline positions={routeCoords} color="#2563eb" weight={4} />
 
-                  <div>🌧️ {sample.precipitation} mm</div>
+              {markers.map(({ key, sample, icon }) => (
+                <Marker
+                  key={key}
+                  position={[sample.lat, sample.lon]}
+                  icon={icon}
+                  eventHandlers={{
+                    click: (e) => {
+                      setSelectedSample(null)
+                      setTimeout(() => {
+                        requestAnimationFrame(() => {
+                          setSelectedSample(sample);
+                        });
+                      }, 0);
+                    }
+                  }}
+                >
+                  <Popup key={`${sample.lat}-${sample.lon}`}>
+                    <div className="space-y-1">
+                      <div>
+                        <strong>{sample.arrivalTime.toLocaleString()}</strong>
+                      </div>
 
-                  <div>☀️ UV {sample.uvIndex}</div>
+                      {selectedSample && 
+                      <div style={{
+                        width: "300px",
+                        height: "220px",
+                        position: "relative",
+                        overflow: "hidden",
+                      }}>
+                        <DigitalTwinPopupContent
+                            sample={selectedSample}
+                            activity={activity}
+                        />
+                      </div>
+                      }
 
-                  <div>💨 {sample.windSpeed} km/h</div>
+                      <div>
+                        🌡️ {sample.temperature}
+                        °C
+                      </div>
 
-                  <div>Wind Dir: {sample.windDirection}°</div>
+                      <div>🌧️ {sample.precipitation} mm</div>
 
-                  <div>Route Bearing: {sample.routeBearing}°</div>
+                      <div>☀️ UV {sample.uvIndex}</div>
 
-                  <div>
-                    <strong>{sample.windType}</strong>
-                  </div>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
-      </div>
+                      <div>💨 {sample.windSpeed} km/h</div>
 
-      <div
-        className="
-            w-full
-            lg:w-80
-            border
-            rounded
-            p-4
-            max-h-[400px]
-            lg:max-h-[700px]
-            overflow-y-auto
-          "
-      >
-        <h2 className="font-bold text-lg mb-4">Route Weather</h2>
+                      <div>Wind Dir: {sample.windDirection}°</div>
 
-        {samples.map((sample, index) => (
-          <div key={index} className="border-b py-3">
-            <div className="font-medium">
-              {sample.arrivalTime.toLocaleTimeString()}
-            </div>
+                      <div>Route Bearing: {sample.routeBearing}°</div>
 
-            <div>
-              🌡️ {sample.temperature}
-              °C
-            </div>
-
-            <div>🌧️ {sample.precipitation} mm</div>
-
-            <div>☀️ UV {sample.uvIndex}</div>
-
-            <div>💨 {sample.windSpeed} km/h</div>
-
-            <div>{sample.windType}</div>
+                      <div>
+                        <strong>{sample.windType}</strong>
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
           </div>
-        ))}
-      </div>
+          <RouteWeatherSidebar
+            samples={samples}
+          />
+        </>
+      )}
+
     </div>
   );
 }

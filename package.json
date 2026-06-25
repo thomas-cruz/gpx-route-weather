@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@mapbox/togeojson": "^0.16.2",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@turf/turf": "^7.3.5",
     "axios": "^1.17.0",
     "leaflet": "^1.9.4",
@@ -17,6 +19,8 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-leaflet": "^5.0.0",
+    "three": "^0.184.0",
+    "three-stdlib": "^2.36.1",
     "xmldom": "^0.6.0"
   },
   "devDependencies": {
