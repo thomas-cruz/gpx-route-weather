@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import * as THREE from "three";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, Sky } from "@react-three/drei";
 
 import ActivityModel from "./activityModel";
 import WindParticles from "./windParticles";
@@ -20,6 +20,12 @@ export default function DigitalTwinScene({
   activity,
 }: DigitalTwinSceneProps) {
   if (!sample) return null;
+  const skyColor =
+    sample.precipitation > 2
+        ? "#6B7280"      // stormy
+        : sample.uvIndex > 7
+        ? "#4FC3F7"      // bright blue
+        : "#A5D8FF";    // cloudy blue
 
   return (
     <div style={{ width: "100%", height: "100%" }}>
@@ -34,19 +40,22 @@ export default function DigitalTwinScene({
           fov: 50,
         }}
         style={{ width: "100%", height: "100%" }}
+        onCreated={({ scene }) => {
+          scene.background = new THREE.Color(skyColor);
+        }}
       >
         <ambientLight intensity={0.5} />
-        <hemisphereLight
-            // skyColor="#87ceeb"
-            groundColor="#444444"
-            intensity={1.2}
+        <Sky
+          distance={450000}
+          sunPosition={[5, 2, 5]}
+          inclination={0.5}
+          azimuth={0.25}
         />
 
         <Sun uvIndex={sample.uvIndex} />
 
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[30, 30]} />
-          {/* <meshStandardMaterial /> */}
           <meshStandardMaterial
               color="#4b5563"
               roughness={1}
@@ -69,7 +78,3 @@ export default function DigitalTwinScene({
     </div>
   );
 }
-
-// export default function DigitalTwinScene() {
-//   return <div style={{ color: "red" }}>TWIN LOADED</div>;
-// }
