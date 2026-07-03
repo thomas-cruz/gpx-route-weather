@@ -6,6 +6,8 @@ A React/Next.js application that helps outdoor enthusiasts plan activities by an
 
 This project takes GPX route files and overlays weather forecasts to help cyclists, runners, and hikers understand what conditions they'll face throughout their journey. It calculates real-time wind conditions (headwinds, tailwinds, crosswinds) and displays hourly weather predictions at each checkpoint along your route.
 
+The app includes a 3D Digital Twin visualization that renders your activity (cyclist or runner) in a Three.js scene, with dynamic weather effects including animated wind particles, rain, and UV-sensitive sun indicators.
+
 ## How It Works
 
 ### Core Functionality
@@ -29,16 +31,21 @@ The app identifies three wind types:
 
 ### What You See
 
-- Interactive Leaflet map showing your route with weather forecast markers
-- Color-coded weather cards showing:
+- **Interactive Leaflet Map**: Shows your route with weather forecast markers at each checkpoint
+- **Digital Twin 3D Scene**: A 3D visualization rendering:
+  - Cyclist or runner model matching your selected activity
+  - Animated wind particles showing wind direction and speed
+  - Rain particles visualizing precipitation levels
+  - Sun component that reacts to UV index
+- **Color-coded Weather Cards**: Displaying:
   - Temperature ⚠️
   - Precipitation chances 🌧️
   - UV Index ☀️
   - Wind speed 💨
   - Wind direction
-  - Wind type classification
-- Detailed weather list panel on the right side
-- Arrivals are displayed in chronological order based on travel time
+  - Wind type classification (Headwind/Tailwind/Crosswind)
+- **Detailed Weather List Panel**: On the right side showing all checkpoints
+- **Arrival Times**: Displayed in chronological order based on your estimated travel time
 
 ## Getting Started
 
@@ -74,6 +81,11 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - ✅ Real-time weather integration via Open-Meteo API
 - ✅ Wind direction analysis relative to route bearing
 - ✅ Activity-specific configurations (cycling, running, hiking)
+- ✅ **3D Digital Twin Scene** with Three.js:
+  - Real cyclist or runner GLB models
+  - Dynamic wind particle system responding to wind data
+  - Rain visualization based on precipitation forecasts
+  - UV-reactive sun component
 - ✅ Visual wind barb indicators
 - ✅ Color-coded weather events
 - ✅ Smooth reactive UI with Next.js
@@ -83,6 +95,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **Framework**: Next.js 14+
 - **UI Library**: React
 - **Maps**: Leaflet.js with react-leaflet
+- **3D Graphics**: Three.js with @react-three/fiber
+- **Asset Loading**: @react-three/drei (useGLTF, OrbitControls)
 - **GPX Parsing**: @mapbox/togeojson
 - **Backend API**: Open-Meteo Weather API
 
@@ -90,19 +104,26 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ```
 gpx-weather-planner/
-├── app/                 # Next.js app router pages
-├── components/          # Reusable React components
-│   ├── mapClientWrapper.tsx     # Main upload interface
-│   ├── map.tsx                  # Reactive map component
-│   └── routeWeatherSidebar.tsx  # Weather data listing
-├── lib/                 # Utility functions
+├── app/                       # Next.js app router pages
+├── components/                # Reusable React components
+│   ├── digitalTwin/          # 3D Digital Twin visualization
+│   │   ├── activityModel.tsx                    # Cyclist/runner GLB models
+│   │   ├── windParticles.tsx                    # Animated wind effect
+│   │   ├── rainParticles.tsx                    # Rain visualization
+│   │   ├── sun.tsx                              # UV-reactive sun component
+│   │   ├── digitalTwinScene.tsx                 # Main Three.js scene
+│   │   └── digitalTwinPopupContent.tsx          # Popup content for twins
+│   ├── mapClientWrapper.tsx # Main upload interface
+│   ├── map.tsx              # Reactive Leaflet map with weather markers
+│   └── routeWeatherSidebar.tsx       # Weather data listing panel
+├── lib/                       # Utility functions
 │   ├── parseGpx.ts               # GPX file parsing
 │   ├── weather.ts                # Weather API calls
-│   ├── wind.ts                   # Wind classification
-│   ├── routeAnalysis.ts          # Distance/bearing math
-│   ├── sampleRoute.ts            # Time-based sampling
-│   └── activityConfig.ts         # Activity settings
-└── types/               # TypeScript type definitions
+│   ├── wind.ts                   # Wind classification logic
+│   ├── routeAnalysis.ts          # Distance/bearing calculations
+│   ├── sampleRoute.ts            # Time-based route sampling
+│   └── activityConfig.ts         # Activity-specific settings
+└── types/                     # TypeScript type definitions
 ```
 
 ## Customization
