@@ -47,7 +47,11 @@ export default function WindParticles({
                             0.02,
                         ]}
                     />
-                    <meshBasicMaterial />
+                    <meshBasicMaterial 
+                        color="#38bdf8"
+                        transparent
+                        opacity={0.8}
+                    />
                 </mesh>
             ))}
         </group>

@@ -44,7 +44,11 @@ export default function RainParticles({
                     <sphereGeometry
                         args={[0.03]}
                     />
-                    <meshBasicMaterial />
+                    <meshBasicMaterial 
+                        color="#3b82f6"
+                        transparent
+                        opacity={0.7}
+                    />
                 </mesh>
             ))}
         </>

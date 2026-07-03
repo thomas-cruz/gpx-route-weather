@@ -36,12 +36,21 @@ export default function DigitalTwinScene({
         style={{ width: "100%", height: "100%" }}
       >
         <ambientLight intensity={0.5} />
+        <hemisphereLight
+            // skyColor="#87ceeb"
+            groundColor="#444444"
+            intensity={1.2}
+        />
 
         <Sun uvIndex={sample.uvIndex} />
 
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <planeGeometry args={[30, 30]} />
-          <meshStandardMaterial />
+          {/* <meshStandardMaterial /> */}
+          <meshStandardMaterial
+              color="#4b5563"
+              roughness={1}
+          />
         </mesh>
 
         <group position={[0, 1, 0]}>
