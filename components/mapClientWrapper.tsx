@@ -161,10 +161,6 @@ export default function MapClientWrapper() {
           </div>
         )}
       </div>
-
-      {/* {gpxData && startTime && (
-        <RouteMap gpxData={gpxData} startTime={startTime} activity={activity} />
-      )} */}
       <RouteMap gpxData={gpxData} startTime={startTime} activity={activity} />
     </div>
   );

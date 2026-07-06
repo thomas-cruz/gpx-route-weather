@@ -1,7 +1,7 @@
 export type RoutePoint = {
   lat: number;
   lon: number;
-  distanceKm: number;
+  distanceKm?: number;
 };
 
 export type WeatherSample = {
